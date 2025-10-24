@@ -21,19 +21,9 @@ export default function LoginForm() {
     router.push('/');
   };
 
-  const handleBackToHome = (): void => {
-    router.push('/');
-  };
-
   return (
     <div className="w-screen h-screen flex justify-center items-center bg-[#191538]">
-      <button 
-        onClick={handleBackToHome}
-        className="absolute top-6 left-6 z-50 back-home-btn"
-      >
-        ← На главную
-      </button>
-      
+    
       <div className={`form-container ${isActive ? 'active' : ''}`}>
         <div className="form-box login">
           <form onSubmit={handleSubmit} className="w-full max-w-[400px]">

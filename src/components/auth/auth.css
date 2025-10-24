@@ -318,3 +318,11 @@
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.3);
 }
+
+@media screen and (max-width: 320px) {
+  .toggle-panel h1 {
+    font-size: 24px !important;
+    text-align: center;
+    padding: 0 10px;
+  }
+}
