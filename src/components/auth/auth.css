@@ -2,7 +2,7 @@
 
 @theme {
   --font-poppins: "Poppins", sans-serif;
-  --color-primary: #6411E0;
+  --color-primary: linear-gradient(135deg, #2F0888 0%, #38099F 25%, #460CB8 75%, #7215E9 100%);
   --shadow-form: 0 0 30px rgba(255, 255, 255, 0.1);
   --shadow-btn: 0 0 10px rgba(255, 255, 255, 0.05);
 }

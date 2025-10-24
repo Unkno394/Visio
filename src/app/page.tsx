@@ -101,19 +101,20 @@ function HeaderOverlay() {
               className="object-contain"
             />
           </div>
-          <span className="text-white font-semibold text-lg">Visio</span>
+          <span className="text-white font-semibold text-lg jua-font">Visio</span>
         </div>
 
         <div className="flex items-center gap-4 max-[320px]:justify-center header-buttons-responsive">
+          {/* Кнопки используют Montserrat Alternates по умолчанию */}
           <Link 
             href="/auth"
-            className="text-white hover:text-gray-200 transition-colors px-3 py-1"
+            className="text-white hover:text-gray-200 transition-colors px-3 py-1 font-medium"
           >
             Вход
           </Link>
           <Link 
             href="/auth"
-            className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-md transition-colors border border-white/30"
+            className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-md transition-colors border border-white/30 font-medium"
           >
             Регистрация
           </Link>
@@ -143,7 +144,7 @@ function HeroSection() {
         Общайтесь и работайте вместе с Visio.
       </h1>
 
-      <p className="text-lg md:text-xl lg:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+      <p className="text-lg md:text-xl lg:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-normal">
         Высококачественные видеовстречи для командной работы и неформального общения — теперь расстояние не преграда. 
         Подключайтесь с любого устройства, из любой точки мира.
       </p>
