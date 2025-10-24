@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -19,8 +19,29 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html,
+body,
+#__next {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+canvas {
+  display: block;
+}
+@media (max-width: 376px) {
+  .header-overlay-responsive {
+    min-height: 80px; /* Увеличиваем высоту для двух строк */
+  }
+  
+  .header-content-responsive {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-buttons-responsive {
+    justify-content: center;
+    margin-top: 8px;
+  }
 }
