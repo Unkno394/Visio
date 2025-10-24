@@ -26,10 +26,10 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center bg-gradient-to-r from-gray-200 to-blue-100">
+    <div className="w-screen h-screen flex justify-center items-center bg-[#191538]">
       <button 
         onClick={handleBackToHome}
-        className="absolute top-6 left-6 z-50 bg-white/80 hover:bg-white text-gray-800 px-4 py-2 rounded-lg shadow-lg transition-all duration-200 backdrop-blur-sm border border-gray-200"
+        className="absolute top-6 left-6 z-50 back-home-btn"
       >
         ← На главную
       </button>
@@ -37,7 +37,7 @@ export default function LoginForm() {
       <div className={`form-container ${isActive ? 'active' : ''}`}>
         <div className="form-box login">
           <form onSubmit={handleSubmit} className="w-full max-w-[400px]">
-            <h1 style={{ fontSize: '36px', margin: '-10px 0 15px 0' }}>Вход</h1>
+            <h1 style={{ fontSize: '36px', margin: '-10px 0 15px 0', color: 'white' }}>Вход</h1>
 
             <div className="input-box">
               <input type="text" placeholder="Имя пользователя" required />
@@ -49,28 +49,15 @@ export default function LoginForm() {
               <i className="bx bxs-lock-alt"></i>
             </div>
 
-            <div className="forgot-link">
-              <a href="#" style={{ fontSize: '14.5px', color: '#333' }}>
-                Забыли пароль?
-              </a>
-            </div>
-
-            <button type="submit" className="btn-primary">Войти</button>
-
-            <p style={{ fontSize: '14.5px', margin: '15px 0' }}>или войдите через соцсети</p>
-
-            <div className="social-icons">
-              <a href="#"><i className="bx bxl-google"></i></a>
-              <a href="#"><i className="bx bxl-facebook"></i></a>
-              <a href="#"><i className="bx bxl-github"></i></a>
-              <a href="#"><i className="bx bxl-linkedin"></i></a>
-            </div>
+            <button type="submit" className="glass-btn" style={{ width: '100%', height: '48px' }}>
+              Войти
+            </button>
           </form>
         </div>
 
         <div className="form-box register">
           <form onSubmit={handleSubmit} className="w-full max-w-[400px]">
-            <h1 style={{ fontSize: '36px', margin: '-10px 0 15px 0' }}>Регистрация</h1>
+            <h1 style={{ fontSize: '36px', margin: '-10px 0 15px 0', color: 'white' }}>Регистрация</h1>
 
             <div className="input-box">
               <input type="text" placeholder="Имя пользователя" required />
@@ -87,16 +74,9 @@ export default function LoginForm() {
               <i className="bx bxs-lock-alt"></i>
             </div>
 
-            <button type="submit" className="btn-primary">Зарегистрироваться</button>
-
-            <p style={{ fontSize: '14.5px', margin: '15px 0' }}>или зарегистрируйтесь через соцсети</p>
-
-            <div className="social-icons">
-              <a href="#"><i className="bx bxl-google"></i></a>
-              <a href="#"><i className="bx bxl-facebook"></i></a>
-              <a href="#"><i className="bx bxl-github"></i></a>
-              <a href="#"><i className="bx bxl-linkedin"></i></a>
-            </div>
+            <button type="submit" className="glass-btn" style={{ width: '100%', height: '48px' }}>
+              Зарегистрироваться
+            </button>
           </form>
         </div>
 
@@ -104,7 +84,11 @@ export default function LoginForm() {
           <div className="toggle-panel toggle-left">
             <h1 style={{ fontSize: '36px', marginBottom: '15px' }}>Добро пожаловать!</h1>
             <p style={{ marginBottom: '20px' }}>Нет аккаунта?</p>
-            <button className="btn-primary btn-outline" onClick={handleRegisterClick}>
+            <button 
+              className="glass-btn" 
+              onClick={handleRegisterClick}
+              style={{ width: '160px', height: '46px' }}
+            >
               Регистрация
             </button>
           </div>
@@ -112,7 +96,11 @@ export default function LoginForm() {
           <div className="toggle-panel toggle-right">
             <h1 style={{ fontSize: '36px', marginBottom: '15px' }}>С возвращением!</h1>
             <p style={{ marginBottom: '20px' }}>Уже есть аккаунт?</p>
-            <button className="btn-primary btn-outline" onClick={handleLoginClick}>
+            <button 
+              className="glass-btn" 
+              onClick={handleLoginClick}
+              style={{ width: '160px', height: '46px' }}
+            >
               Войти
             </button>
           </div>
