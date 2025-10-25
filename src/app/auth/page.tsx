@@ -3,11 +3,14 @@
 import './auth.css';
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from '../../contexts/ThemeContext';
+import AnimatedBackground from '../../components/AnimatedBackground';
 
 export default function LoginForm() {
   const [isActive, setIsActive] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+  const { isDarkTheme, waveColor } = useTheme();
 
   const handleRegisterClick = (): void => {
     setIsActive(true);
@@ -41,8 +44,9 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center bg-[#191538]">
-    
+    <div className="w-screen h-screen flex justify-center items-center bg-[#191538] relative">
+      <AnimatedBackground className="fixed inset-0 w-full h-full -z-10" />
+      
       <div className={`form-container ${isActive ? 'active' : ''}`}>
         <div className="form-box login">
           <form onSubmit={handleLoginSubmit} className="w-full max-w-[400px]">

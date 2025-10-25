@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Jua, Montserrat_Alternates } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from '@/contexts/ThemeContext'; // Добавьте этот импорт
 
 // Подключаем шрифты
 const jua = Jua({
@@ -24,7 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru">
       <body className={`${montserratAlternates.variable} ${jua.variable} antialiased`}>
-        {children}
+        <ThemeProvider> {/* Оберните children в ThemeProvider */}
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

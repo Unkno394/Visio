@@ -33,335 +33,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Бургер-меню */
-.burger-menu {
-  position: relative;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 50;
-}
-
-.burger-line {
-  display: block;
-  height: 2px;
-  width: 24px;
-  background-color: white;
-  margin: 3px 0;
-  transition: none;
-}
-
-/* Основной контейнер */
-.app-container {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Анимированный фон */
-.canvas-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -10;
-}
-
-/* Боковая панель - ОСНОВНЫЕ ИСПРАВЛЕНИЯ */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 40;
-  width: 100vw; /* Полная ширина viewport */
-  height: 100vh; /* Полная высота viewport */
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 16px;
-  transition: transform 0.3s ease-in-out;
-  overflow-y: auto; /* Скролл при необходимости */
-  box-sizing: border-box; /* Учитываем padding в размерах */
-}
-
-.sidebar-hidden {
-  transform: translateX(-100%);
-}
-
-.sidebar-visible {
-  transform: translateX(0);
-}
-
-/* Контейнер контента сайдбара */
-.sidebar-content {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Логотип - ВЫРАВНИВАНИЕ С БУРГЕРОМ */
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 32px;
-  flex-shrink: 0; /* Не сжимается */
-  height: 40px; /* Фиксированная высота для выравнивания */
-  margin-top: 8px; /* Добавляем отступ сверху чтобы выровнять с бургером */
-}
-
-.logo-image {
-  width: 32px;
-  height: 32px;
-}
-
-.logo-text {
-  color: white;
-  font-weight: 600;
-  font-size: 18px;
-  line-height: 1; /* Убираем лишние отступы */
-}
-
-/* Навигация */
-.nav-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-grow: 1; /* Занимает все доступное пространство */
-}
-
-.nav-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 12px;
-  color: white;
-  text-decoration: none;
-  transition: background-color 0.2s ease;
-}
-
-.nav-link-active {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.nav-link-inactive {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.nav-link-inactive:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-/* Основной контент */
-.main-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  min-height: 100vh;
-  position: relative;
-  z-index: 10;
-}
-
-/* Карточки действий */
-.action-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  width: 100%;
-  max-width: 640px;
-  justify-items: center;
-}
-
-.action-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  padding: 24px;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  width: 100%;
-  height: 176px;
-}
-
-.action-card:hover {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.action-icon {
-  width: 44px;
-  height: 44px;
-  margin-bottom: 16px;
-  color: white;
-}
-
-.action-text {
-  color: white;
-  font-weight: 500;
-  font-size: 16px;
-  text-align: center;
-}
-
-/* Оверлей для мобильных */
-.mobile-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 30;
-}
-
-/* Десктопная версия */
-@media (min-width: 768px) {
-  .app-container {
-    flex-direction: row;
-  }
-  
-  .sidebar {
-    position: relative;
-    width: 256px; /* Фиксированная ширина на десктопе */
-    height: 100vh;
-    transform: translateX(0) !important;
-  }
-  
-  .burger-desktop {
-    display: block;
-  }
-  
-  .burger-mobile {
-    display: none;
-  }
-  
-  .action-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
-  }
-  
-  .action-card {
-    width: 224px;
-    height: 192px;
-  }
-}
-
-/* Мобильная версия */
-@media (max-width: 767px) {
-  .burger-desktop {
-    display: none;
-  }
-  
-  .burger-mobile {
-    display: block;
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    z-index: 50;
-  }
-  
-  .logo-container {
-    margin-left: 48px; /* Отступ для бургера */
-    margin-top: 0; /* Убираем верхний отступ */
-    height: 40px; /* Такая же высота как у бургера */
-    align-items: center; /* Центрируем по вертикали */
-  }
-  
-  .action-card {
-    max-width: 280px;
-    height: 160px;
-  }
-  
-  .action-icon {
-    width: 36px;
-    height: 36px;
-    margin-bottom: 12px;
-  }
-  
-  .action-text {
-    font-size: 14px;
-  }
-  
-  .main-content {
-    padding: 16px 12px;
-  }
-}
-
-/* Планшеты и маленькие десктопы */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .action-card {
-    width: 200px;
-    height: 180px;
-  }
-}
-
-/* Очень маленькие экраны (до 425px) */
-@media (max-width: 425px) {
-  .sidebar {
-    padding: 12px;
-  }
-  
-  .logo-container {
-    margin-bottom: 24px;
-    margin-left: 44px; /* Немного меньше отступ на очень маленьких экранах */
-    height: 36px; /* Чуть меньше высота */
-  }
-  
-  .logo-image {
-    width: 28px;
-    height: 28px;
-  }
-  
-  .logo-text {
-    font-size: 16px;
-  }
-  
-  .nav-link {
-    padding: 10px 12px;
-    font-size: 14px;
-  }
-  
-  .action-card {
-    height: 140px;
-    padding: 20px;
-  }
-  
-  .action-icon {
-    width: 32px;
-    height: 32px;
-    margin-bottom: 10px;
-  }
-  
-  .action-text {
-    font-size: 13px;
-  }
-  
-  /* На очень маленьких экранах немного сдвигаем бургер */
-  .burger-mobile {
-    left: 12px;
-    top: 14px; /* Поднимаем чуть выше для центрирования */
-  }
-}
-
 /* Убираем скролл при открытом меню на мобильных */
 .no-scroll {
   overflow: hidden;
@@ -372,4 +43,55 @@ body {
   .sidebar {
     z-index: 45;
   }
+}
+
+/* Улучшенные плавные анимации */
+* {
+  transition-property: color, background-color, border-color, transform, opacity, box-shadow;
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-duration: 350ms;
+}
+
+/* Особо плавные анимации для специфичных элементов */
+button, a, .transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-duration: 400ms;
+}
+
+/* Плавная анимация для сайдбара */
+aside {
+  transition: transform 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Плавная анимация для overlay */
+.bg-black\/50 {
+  transition: opacity 300ms ease-in-out;
+}
+
+/* Улучшаем внешний вид скроллбара */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Анимация для карточек при hover */
+.group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
+}
+
+.group:hover .group-hover\:bg-white\/30 {
+  background-color: rgba(255, 255, 255, 0.3);
 }
