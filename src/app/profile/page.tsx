@@ -1,49 +1,17 @@
 // app/profile/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import AnimatedBackground from "../../components/AnimatedBackground";
 import { useTheme, WaveColor } from "../../contexts/ThemeContext";
-import AlertDialog from "../../components/AlertDialog";
-
-/* ---------- Кастомный хук для кастомного алерта ---------- */
-function useCustomAlert() {
-  const [alertData, setAlertData] = useState<{
-    title: string;
-    description: string;
-    confirmText?: string;
-    confirmColor?: "red" | "blue" | "green" | "yellow" | "purple";
-  } | null>(null);
-
-  const showAlert = (
-    title: string,
-    description: string,
-    confirmText = "ОК",
-    confirmColor: "blue" | "red" | "green" | "yellow" | "purple" = "blue"
-  ) => {
-    setAlertData({ title, description, confirmText, confirmColor });
-  };
-
-  const alertComponent = alertData ? (
-    <AlertDialog
-      trigger={<></>}
-      title={alertData.title}
-      description={alertData.description}
-      cancelText=""
-      confirmText={alertData.confirmText}
-      confirmColor={alertData.confirmColor}
-      onConfirm={() => setAlertData(null)}
-      onCancel={() => setAlertData(null)}
-    />
-  ) : null;
-
-  return { showAlert, alertComponent };
-}
+import { useCustomAlert } from "../../hooks/useCustomAlert";
 
 /* ---------- Компоненты ---------- */
 function UserProfileHeader({
   username,
+  avatar,
+  onAvatarChange,
   onEdit,
   isEditing,
   newUsername,
@@ -53,6 +21,8 @@ function UserProfileHeader({
   waveColor,
 }: {
   username: string;
+  avatar: string;
+  onAvatarChange: (file: File) => void;
   onEdit: () => void;
   isEditing: boolean;
   newUsername: string;
@@ -61,6 +31,9 @@ function UserProfileHeader({
   onCancel: () => void;
   waveColor: WaveColor;
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
   const getWaveColorClass = (color: WaveColor) => {
     switch (color) {
       case "blue": return "from-blue-400 to-blue-600";
@@ -72,15 +45,75 @@ function UserProfileHeader({
     }
   };
 
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Проверяем тип файла
+      if (!file.type.startsWith('image/')) {
+        return;
+      }
+      // Проверяем размер файла (максимум 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        return;
+      }
+      onAvatarChange(file);
+    }
+  };
+
   return (
     <div className="flex items-center gap-4 mb-8">
-      <div
-        className={`w-20 h-20 rounded-full bg-gradient-to-br ${getWaveColorClass(
-          waveColor
-        )} flex items-center justify-center text-white font-semibold text-2xl`}
-      >
-        {username.charAt(0).toUpperCase()}
+      <div className="relative">
+        <div
+          className={`w-20 h-20 rounded-full bg-gradient-to-br ${getWaveColorClass(
+            waveColor
+          )} flex items-center justify-center text-white font-semibold text-2xl relative overflow-hidden cursor-pointer transition-all duration-300 ${
+            isHovered ? 'ring-4 ring-white/50 scale-105' : ''
+          }`}
+          onClick={handleAvatarClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {avatar ? (
+            <img
+              src={avatar}
+              alt="Аватар"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            username.charAt(0).toUpperCase()
+          )}
+          
+          {/* Overlay при наведении */}
+          {isHovered && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        {/* Индикатор смены аватарки */}
+        <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1">
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+          </svg>
+        </div>
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
       </div>
+      
       <div className="flex-1">
         {isEditing ? (
           <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
@@ -133,11 +166,18 @@ function UserProfileHeader({
           </div>
         )}
         <p className="text-white/70">user@example.com</p>
+        <button
+          onClick={handleAvatarClick}
+          className="text-blue-400 hover:text-blue-300 text-sm transition-colors mt-2"
+        >
+          Сменить аватар
+        </button>
       </div>
     </div>
   );
 }
 
+// Остальные компоненты остаются без изменений...
 function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 mb-6">
@@ -192,7 +232,7 @@ function WaveColorSelector({
 /* ---------- Основной компонент ---------- */
 export default function ProfilePage() {
   const { waveColor, setWaveColor } = useTheme();
-  const { showAlert, alertComponent } = useCustomAlert();
+  const { showAlert, showConfirm, alertComponent } = useCustomAlert();
 
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -203,19 +243,43 @@ export default function ProfilePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [avatar, setAvatar] = useState("");
+
+  const handleAvatarChange = (file: File) => {
+    // Создаем URL для превью
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setAvatar(result);
+      showAlert("Успешно", "Аватар успешно изменён!", {
+        confirmText: "Хорошо",
+        confirmColor: "green"
+      });
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleUsernameSave = () => {
     if (newUsername.trim() === "") {
-      showAlert("Ошибка", "Имя пользователя не может быть пустым", "Понял", "red");
+      showAlert("Ошибка", "Имя пользователя не может быть пустым", {
+        confirmText: "Понял",
+        confirmColor: "red"
+      });
       return;
     }
     if (newUsername.length < 3) {
-      showAlert("Ошибка", "Имя пользователя должно содержать минимум 3 символа", "ОК", "red");
+      showAlert("Ошибка", "Имя пользователя должно содержать минимум 3 символа", {
+        confirmText: "ОК",
+        confirmColor: "red"
+      });
       return;
     }
     setUsername(newUsername);
     setIsEditingUsername(false);
-    showAlert("Успешно", "Имя пользователя изменено!", "Хорошо", "green");
+    showAlert("Успешно", "Имя пользователя изменено!", {
+      confirmText: "Хорошо",
+      confirmColor: "green"
+    });
   };
 
   const handleUsernameCancel = () => {
@@ -225,37 +289,65 @@ export default function ProfilePage() {
 
   const handleEmailSave = () => {
     if (email.trim() === "") {
-      showAlert("Ошибка", "Email не может быть пустым", "Понял", "red");
+      showAlert("Ошибка", "Email не может быть пустым", {
+        confirmText: "Понял",
+        confirmColor: "red"
+      });
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      showAlert("Ошибка", "Введите корректный email", "ОК", "red");
+      showAlert("Ошибка", "Введите корректный email", {
+        confirmText: "ОК",
+        confirmColor: "red"
+      });
       return;
     }
     setIsEditingEmail(false);
-    showAlert("Успешно", "Email успешно изменён!", "Хорошо", "green");
+    showAlert("Успешно", "Email успешно изменён!", {
+      confirmText: "Хорошо",
+      confirmColor: "green"
+    });
   };
 
   const handlePasswordSave = () => {
     if (newPassword !== confirmPassword) {
-      showAlert("Ошибка", "Пароли не совпадают", "Понял", "red");
+      showAlert("Ошибка", "Пароли не совпадают", {
+        confirmText: "Понял",
+        confirmColor: "red"
+      });
       return;
     }
     if (newPassword.length < 6) {
-      showAlert("Ошибка", "Пароль должен содержать минимум 6 символов", "ОК", "red");
+      showAlert("Ошибка", "Пароль должен содержать минимум 6 символов", {
+        confirmText: "ОК",
+        confirmColor: "red"
+      });
       return;
     }
     setIsEditingPassword(false);
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
-    showAlert("Успешно", "Пароль успешно изменён!", "Хорошо", "green");
+    showAlert("Успешно", "Пароль успешно изменён!", {
+      confirmText: "Хорошо",
+      confirmColor: "green"
+    });
   };
 
   const handleLogout = () => {
-    showAlert("Выход", "Выход выполнен. До скорого!", "ОК", "yellow");
-    setTimeout(() => (window.location.href = "/login"), 1000);
+    showConfirm(
+      "Выход из системы", 
+      "Вы уверены, что хотите выйти? Все несохранённые данные будут потеряны.",
+      () => {
+        // Прямой редирект после подтверждения выхода
+        window.location.href = "/";
+      },
+      {
+        confirmText: "Выйти",
+        confirmColor: "red"
+      }
+    );
   };
 
   return (
@@ -281,6 +373,8 @@ export default function ProfilePage() {
         <main className="container mx-auto px-4 md:px-6 max-w-4xl pb-8">
           <UserProfileHeader
             username={username}
+            avatar={avatar}
+            onAvatarChange={handleAvatarChange}
             onEdit={() => setIsEditingUsername(true)}
             isEditing={isEditingUsername}
             newUsername={newUsername}
@@ -396,19 +490,12 @@ export default function ProfilePage() {
           {/* Действия */}
           <SettingsSection title="Действия">
             <SettingItem label="Выйти из системы">
-              <AlertDialog
-                trigger={
-                  <button className="bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 px-6 py-3 rounded-lg transition-colors duration-300 border border-red-500/30 whitespace-nowrap">
-                    Выйти из системы
-                  </button>
-                }
-                title="Выход из системы"
-                description="Вы уверены, что хотите выйти? Все несохранённые данные будут потеряны."
-                cancelText="Отмена"
-                confirmText="Выйти"
-                confirmColor="red"
-                onConfirm={handleLogout}
-              />
+              <button 
+                onClick={handleLogout}
+                className="bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 px-6 py-3 rounded-lg transition-colors duration-300 border border-red-500/30 whitespace-nowrap"
+              >
+                Выйти из системы
+              </button>
             </SettingItem>
           </SettingsSection>
 
