@@ -22,18 +22,13 @@ function HeaderOverlay() {
         </div>
 
         <div className="flex items-center gap-4 max-[320px]:justify-center header-buttons-responsive">
-          {/* Кнопки используют Montserrat Alternates по умолчанию */}
           <Link 
             href="/auth"
-            className="text-white hover:text-gray-200 transition-colors px-3 py-1 font-medium"
+            className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-md transition-colors border border-white/30 font-medium flex items-center gap-1"
           >
-            Вход
-          </Link>
-          <Link 
-            href="/auth"
-            className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-md transition-colors border border-white/30 font-medium"
-          >
-            Регистрация
+            <span>Зарегистрироваться</span>
+            <span className="text-white/70">/</span>
+            <span>Войти</span>
           </Link>
         </div>
       </div>
@@ -61,10 +56,20 @@ function HeroSection() {
         Общайтесь и работайте вместе с Visio.
       </h1>
 
-      <p className="text-lg md:text-xl lg:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-normal">
+      <p className="text-lg md:text-xl lg:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-normal mb-8">
         Высококачественные видеовстречи для командной работы и неформального общения — теперь расстояние не преграда. 
         Подключайтесь с любого устройства, из любой точки мира.
       </p>
+
+      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <button className="bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-lg transition-colors border border-white/30 font-medium flex items-center gap-2">
+          <span>Создать видеовстречу</span>
+        </button>
+        
+        <button className="bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-lg transition-colors border border-white/30 font-medium flex items-center gap-2">
+          <span>Подключиться</span>
+        </button>
+      </div>
     </div>
   );
 }
