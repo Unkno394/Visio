@@ -7,6 +7,81 @@ import Image from "next/image";
 import AnimatedBackground from "../../components/AnimatedBackground";
 import { useTheme } from "../../contexts/ThemeContext";
 
+// Компонент модалки для подключения
+function JoinModal({ 
+  isOpen, 
+  onClose 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+}) {
+  const [roomId, setRoomId] = useState("");
+
+  const handleJoin = () => {
+    // Всегда переходим на /create независимо от введенного ID
+    window.location.href = `/create`;
+  };
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={handleOverlayClick}
+    >
+      <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 w-full max-w-md">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-white">Подключиться к встрече</h2>
+          <button
+            onClick={onClose}
+            className="text-white/80 hover:text-white transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-white text-sm font-medium mb-2">
+            Введите ID комнаты
+          </label>
+          <input
+            type="text"
+            value={roomId}
+            onChange={(e) => setRoomId(e.target.value)}
+            placeholder="Например: ABC123XY"
+            className="w-full bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+            onKeyPress={(e) => e.key === 'Enter' && handleJoin()}
+            autoFocus
+          />
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 bg-white/20 hover:bg-white/30 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-300"
+          >
+            Отмена
+          </button>
+          <button
+            onClick={handleJoin}
+            className="flex-1 bg-white text-blue-600 hover:bg-blue-50 font-semibold py-3 px-4 rounded-lg transition-all duration-300"
+          >
+            Подключиться
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function BurgerMenu({
   isOpen,
   onClick,
@@ -40,7 +115,7 @@ function BurgerMenu({
 }
 
 // Компонент основного контента (первый скриншот)
-function MainContent() {
+function MainContent({ onOpenJoinModal }: { onOpenJoinModal: () => void }) {
   return (
     <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 md:p-12 w-full max-w-4xl mt-8 sm:mt-0">
       <div className="text-center mb-8">
@@ -77,9 +152,9 @@ function MainContent() {
           </span>
         </Link>
 
-        <Link
-          href="/join"
-          className="group w-full max-w-xs bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/20 transition-all duration-500 flex flex-col items-center justify-center text-white no-underline"
+        <button
+          onClick={onOpenJoinModal}
+          className="group w-full max-w-xs bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/20 transition-all duration-500 flex flex-col items-center justify-center text-white cursor-pointer"
         >
           <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-white/30 transition-colors duration-500">
             <svg
@@ -99,7 +174,7 @@ function MainContent() {
           <span className="text-lg font-semibold text-center">
             Подключиться
           </span>
-        </Link>
+        </button>
       </div>
     </div>
   );
@@ -166,6 +241,7 @@ function UserProfile() {
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'meetings' | 'calls'>('meetings');
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const { isDarkTheme, waveColor } = useTheme();
 
   const toggleMenu = () => setIsMenuOpen((s) => !s);
@@ -289,12 +365,18 @@ export default function Home() {
 
           {/* Переключение между контентом */}
           {activeTab === 'meetings' ? (
-            <MainContent />
+            <MainContent onOpenJoinModal={() => setIsJoinModalOpen(true)} />
           ) : (
             <ConferenceHistoryContent />
           )}
         </main>
       </div>
+
+      {/* Модалка подключения */}
+      <JoinModal 
+        isOpen={isJoinModalOpen} 
+        onClose={() => setIsJoinModalOpen(false)} 
+      />
     </div>
   );
 }

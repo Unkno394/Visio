@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 
 interface AlertDialogProps {
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
   title: string;
   description: string;
   cancelText?: string;
@@ -13,6 +13,7 @@ interface AlertDialogProps {
   onConfirm: () => void;
   onCancel?: () => void;
   maxWidth?: string;
+  isOpen?: boolean;
 }
 
 export default function AlertDialog({
@@ -24,32 +25,38 @@ export default function AlertDialog({
   confirmColor = "red",
   onConfirm,
   onCancel,
-  maxWidth = "450px"
+  maxWidth = "450px",
+  isOpen = false
 }: AlertDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(isOpen);
 
-  const handleOpen = () => setIsOpen(true);
+  // Синхронизируем внутреннее состояние с пропсом isOpen
+  useEffect(() => {
+    setInternalIsOpen(isOpen);
+  }, [isOpen]);
+
+  const handleOpen = () => setInternalIsOpen(true);
   const handleClose = () => {
-    setIsOpen(false);
+    setInternalIsOpen(false);
     onCancel?.();
   };
 
   const handleConfirm = () => {
     onConfirm();
-    setIsOpen(false);
+    setInternalIsOpen(false);
   };
 
   // Закрытие по ESC
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
+      if (e.key === "Escape" && internalIsOpen) {
         handleClose();
       }
     };
 
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen]);
+  }, [internalIsOpen]);
 
   const getConfirmButtonClass = () => {
     const baseClass = "px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50";
@@ -79,13 +86,15 @@ export default function AlertDialog({
 
   return (
     <>
-      {/* Trigger */}
-      <div onClick={handleOpen} className="inline-block">
-        {trigger}
-      </div>
+      {/* Trigger - отображаем только если передан trigger и диалог не контролируется извне */}
+      {trigger && !isOpen && (
+        <div onClick={handleOpen} className="inline-block">
+          {trigger}
+        </div>
+      )}
 
       {/* Overlay */}
-      {isOpen && (
+      {internalIsOpen && (
         <div 
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={handleOverlayClick}
@@ -108,12 +117,14 @@ export default function AlertDialog({
 
               {/* Actions */}
               <div className="flex gap-3 justify-end">
-                <button
-                  onClick={handleClose}
-                  className="px-4 py-2 rounded-lg font-medium bg-white/10 hover:bg-white/20 text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
-                >
-                  {cancelText}
-                </button>
+                {cancelText && (
+                  <button
+                    onClick={handleClose}
+                    className="px-4 py-2 rounded-lg font-medium bg-white/10 hover:bg-white/20 text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  >
+                    {cancelText}
+                  </button>
+                )}
                 <button
                   onClick={handleConfirm}
                   className={getConfirmButtonClass()}
