@@ -52,10 +52,15 @@ type SignalMessage =
       action: "mute-audio" | "mute-video" | "ban" | "chat-off" | "chat-on";
     }
   | {
-      type: "offer" | "answer";
+      type: "offer";
       from: string;
       name?: string;
       role?: "admin" | "member";
+      sdp: RTCSessionDescriptionInit;
+    }
+  | {
+      type: "answer";
+      from: string;
       sdp: RTCSessionDescriptionInit;
     }
   | { type: "ice-candidate"; from: string; candidate: RTCIceCandidateInit }
@@ -224,6 +229,7 @@ export default function RoomPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!searchParams) return;
     const currentRoom = searchParams.get("roomId");
     const banKey = currentRoom ? `visio-ban-${currentRoom}` : null;
     if (banKey && sessionStorage.getItem(banKey) === "1") {
@@ -522,7 +528,7 @@ export default function RoomPage() {
       });
       console.log("[webrtc] sent answer to", message.from);
     },
-    [createPeerConnection, sendSignal]
+    [createPeerConnection, ensureLocalTracks, sendSignal]
   );
 
   const handleAnswer = useCallback(
@@ -813,6 +819,7 @@ export default function RoomPage() {
           {
             id: "local",
             name: displayName,
+            role: isAdmin ? "admin" : assignedRole || "member",
             isAudioMuted: true,
             isVideoOff: true,
           },

@@ -11,7 +11,10 @@ type Peer = {
 
 type Room = Map<string, Peer>;
 
-type ExtServer = NextApiResponse["socket"]["server"] & { wss?: WebSocketServer };
+type ExtServer = {
+  wss?: WebSocketServer;
+  on?: any;
+};
 
 const rooms = new Map<string, Room>();
 
@@ -36,7 +39,7 @@ const setupWebSocketServer = (server: ExtServer) => {
 
   const wss = new WebSocketServer({ noServer: true });
 
-  server.on("upgrade", (req, socket, head) => {
+  server.on("upgrade", (req: any, socket: any, head: any) => {
     const url = new URL(req.url || "", `http://${req.headers.host}`);
     if (url.pathname !== "/api/ws") return;
 
@@ -175,7 +178,7 @@ export const config = {
 };
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const server = res.socket.server as ExtServer;
+  const server = (res.socket as any)?.server as ExtServer;
   setupWebSocketServer(server);
   res.setHeader("Content-Type", "application/json");
   res.status(200).end(JSON.stringify({ status: "ok", rooms: rooms.size }));
