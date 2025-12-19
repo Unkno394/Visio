@@ -26,6 +26,7 @@ interface ChatPanelProps {
   onSendMessage: (text: string) => void;
   participants: Participant[];
   onClose: () => void;
+  isChatBlocked?: boolean;
 }
 
 const getEmojiCategories = () => {
@@ -90,17 +91,6 @@ function Twemoji({ emoji, size = 20 }: { emoji: string; size?: number }) {
 function TwitterEmojiPicker({ onEmojiSelect, onClose }: { onEmojiSelect: (emoji: string) => void; onClose: () => void }) {
   const [activeCategory, setActiveCategory] = useState('Часто');
   const pickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onClose]);
 
   const currentEmojis = emojiCategories[activeCategory] || [];
   const emojiChunks = [];
@@ -195,41 +185,13 @@ function EmojiText({ text, className = "" }: { text: string; className?: string 
 }
 
 function InputEmojiText({ text }: { text: string }) {
-  const emojiRegex = /\p{Extended_Pictographic}/gu;
-  
   if (!text) return null;
 
-  const parts = [];
-  let lastIndex = 0;
-  let match;
-
-  while ((match = emojiRegex.exec(text)) !== null) {
-    const emoji = match[0];
-    const index = match.index;
-
-    if (index > lastIndex) {
-      parts.push(text.slice(lastIndex, index));
-    }
-
-    parts.push(
-      <Twemoji
-        key={`emoji-${index}`}
-        emoji={emoji}
-        size={20}
-      />
-    );
-
-    lastIndex = index + emoji.length;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
-
-  return <>{parts}</>;
+  // In input we show raw text so the caret doesn't jump
+  return <span className="text-white">{text}</span>;
 }
 
-export function ChatPanel({ isOpen, messages, onSendMessage, participants, onClose }: ChatPanelProps) {
+export function ChatPanel({ isOpen, messages, onSendMessage, participants, onClose, isChatBlocked }: ChatPanelProps) {
   const [message, setMessage] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -241,6 +203,7 @@ export function ChatPanel({ isOpen, messages, onSendMessage, participants, onClo
   }, [messages]);
 
   const handleSendMessage = () => {
+    if (isChatBlocked) return;
     if (message.trim()) {
       onSendMessage(message.trim());
       setMessage('');
@@ -313,43 +276,45 @@ export function ChatPanel({ isOpen, messages, onSendMessage, participants, onClo
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-white/10 bg-gray-900/80 backdrop-blur-md">
-          {showEmojiPicker && (
+          {showEmojiPicker && !isChatBlocked && (
             <TwitterEmojiPicker onEmojiSelect={addEmoji} onClose={() => setShowEmojiPicker(false)} />
           )}
           
           <div className="flex gap-3 items-end">
-            <button
-              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105 border border-white/20 flex-shrink-0"
-            >
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
+            {!isChatBlocked && (
+              <button
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105 border border-white/20 flex-shrink-0"
+              >
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            )}
             
             <div className="flex-1 relative">
               <div className="relative">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Написать сообщение..."
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-base backdrop-blur-md transition-all duration-200 opacity-0"
-                />
-                <div className="absolute inset-0 pointer-events-none flex items-center px-4 py-3">
-                  <span className="text-white text-base flex items-center flex-wrap">
-                    <InputEmojiText text={message} />
-                    {!message && <span className="text-white/50">Написать сообщение...</span>}
-                  </span>
-                </div>
+                {isChatBlocked ? (
+                  <div className="w-full bg-white/5 border border-red-500/50 rounded-xl px-4 py-3 text-red-200 text-sm backdrop-blur-md">
+                    Вам запретили писать
+                  </div>
+                ) : (
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Написать сообщение..."
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-base backdrop-blur-md transition-all duration-200"
+                  />
+                )}
               </div>
             </div>
             
             <button
               onClick={handleSendMessage}
-              disabled={!message.trim()}
+              disabled={!message.trim() || isChatBlocked}
               className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed rounded-full transition-all duration-200 hover:scale-105 flex items-center justify-center shadow-lg flex-shrink-0"
             >
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,18 +404,12 @@ export function ChatPanel({ isOpen, messages, onSendMessage, participants, onClo
                   <input
                     ref={inputRef}
                     type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Написать сообщение..."
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 sm:px-4 sm:py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm backdrop-blur-md transition-all duration-200 opacity-0"
-                  />
-                  <div className="absolute inset-0 pointer-events-none flex items-center px-3 py-2 sm:px-4 sm:py-3">
-                    <span className="text-white text-sm flex items-center flex-wrap">
-                      <InputEmojiText text={message} />
-                      {!message && <span className="text-white/50">Написать сообщение...</span>}
-                    </span>
-                  </div>
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Написать сообщение..."
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 sm:px-4 sm:py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm backdrop-blur-md transition-all duration-200"
+                />
                 </div>
               </div>
               
